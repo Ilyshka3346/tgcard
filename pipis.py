@@ -6,11 +6,9 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from supabase import create_client, Client
 from postgrest.exceptions import APIError
-from flask import Flask, request, jsonify
-import threading
 
 # Настройки Supabase
-SUPABASE_URL = "https://zkhnijcxqhuljvufgrqa.supabase.co"  # Замените на свой URL
+SUPABASE_URL = "https://zkhnijcxqhuljvufgrqa.supabase.co"  # Замените на ваш URL
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraG5pamN4cWh1bGp2dWZncnFhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDEzOTQ4NiwiZXhwIjoyMDU1NzE1NDg2fQ.Iv4wqMu3inhLsLRnbj_Ifg5ZdAdWeA9vTpg0m3fCv3U"  # Замените на service_role ключ
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -84,7 +82,7 @@ async def show_main_menu(message: types.Message):
     keyboard.add(KeyboardButton(text="Проверить баланс"))
     keyboard.add(KeyboardButton(text="Перевести"))
     keyboard.add(KeyboardButton(text="Админ-панель"))
-    keyboard.add(KeyboardButton(text="Открыть карту", web_app=WebAppInfo(url="https://your-website.com/card.html")))
+    keyboard.add(KeyboardButton(text="Открыть карту", web_app=WebAppInfo(url="https://ilyshka3346.github.io/tgcard/")))  # Укажите ваш URL
     await message.answer("Главное меню:", reply_markup=keyboard.as_markup(resize_keyboard=True))
 
 # Команда /start
