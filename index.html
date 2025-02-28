@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ваша карта</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 320px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .card-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px 0;
+            letter-spacing: 4px;
+        }
+        .card-label {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+        .balance {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-label">Номер вашей карты:</div>
+        <div class="card-number" id="cardNumber">Загрузка...</div>
+        <div class="balance">Баланс: <span id="balance">0</span> GOM</div>
+    </div>
+
+    <!-- Подключаем Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Инициализация Supabase Client
+        const supabaseUrl = "https://zkhnijcxqhuljvufgrqa.supabase.co"; // Замените на ваш Supabase URL
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraG5pamN4cWh1bGp2dWZncnFhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDEzOTQ4NiwiZXhwIjoyMDU1NzE1NDg2fQ.Iv4wqMu3inhLsLRnbj_Ifg5ZdAdWeA9vTpg0m3fCv3U"; // Замените на ваш anon (публичный) ключ
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Получаем данные карты и баланса из Supabase
+        async function fetchCardData() {
+            const tg = window.Telegram.WebApp;
+            tg.ready(); // Инициализация WebApp
+
+            // Получаем user_id из Telegram
+            const user_id = tg.initDataUnsafe.user?.id;
+
+            if (user_id) {
+                try {
+                    // Запрашиваем данные из таблицы users
+                    const { data, error } = await supabase
+                        .from("users")
+                        .select("card_number, balance")
+                        .eq("user_id", user_id)
+                        .single();
+
+                    if (error) throw error;
+
+                    if (data) {
+                        // Отображаем номер карты и баланс
+                        document.getElementById("cardNumber").textContent = data.card_number;
+                        document.getElementById("balance").textContent = data.balance;
+                    } else {
+                        document.getElementById("cardNumber").textContent = "Карта не найдена";
+                    }
+                } catch (error) {
+                    console.error("Ошибка при загрузке данных:", error);
+                    document.getElementById("cardNumber").textContent = "Ошибка загрузки";
+                }
+            } else {
+                document.getElementById("cardNumber").textContent = "Ошибка: user_id не найден";
+            }
+        }
+
+        // Загружаем данные при открытии страницы
+        fetchCardData();
+    </script>
+</body>
+</html>
